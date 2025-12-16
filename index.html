@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Game</title>
 
 <style>
@@ -20,6 +19,14 @@ html, body {
   width: 100%;
   height: 100%;
   position: relative;
+}
+
+/* Force-hide button while in fullscreen (CSS-level) */
+:fullscreen #fullscreenBtn {
+  display: none !important;
+}
+:-webkit-full-screen #fullscreenBtn {
+  display: none !important;
 }
 
 iframe {
@@ -50,7 +57,6 @@ iframe {
   <button id="fullscreenBtn">Fullscreen</button>
 
   <iframe
-    id="gameFrame"
     src="https://script.google.com/macros/s/AKfycbx63iRe5mtf5PQGIn_eGwKePxCA1iU6w-YApn57Mh4phi2ZB-G-GCJA1YTV9jKrwoqb/exec"
     allowfullscreen>
   </iframe>
@@ -60,20 +66,25 @@ iframe {
 const container = document.getElementById("container");
 const btn = document.getElementById("fullscreenBtn");
 
-btn.onclick = () => {
-  if (!document.fullscreenElement) {
-    container.requestFullscreen();
-  }
-};
+btn.addEventListener("click", () => {
+  // Hide instantly (no waiting for events)
+  btn.style.display = "none";
 
-// Hide/show button based on fullscreen state
-document.addEventListener("fullscreenchange", () => {
-  if (document.fullscreenElement) {
-    btn.style.display = "none";
-  } else {
+  container.requestFullscreen().catch(() => {
+    // If fullscreen fails, bring button back
+    btn.style.display = "block";
+  });
+});
+
+// Restore button ONLY when exiting fullscreen
+function onExitFullscreen() {
+  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
     btn.style.display = "block";
   }
-});
+}
+
+document.addEventListener("fullscreenchange", onExitFullscreen);
+document.addEventListener("webkitfullscreenchange", onExitFullscreen);
 </script>
 
 </body>
