@@ -62,13 +62,18 @@ const btn = document.getElementById("fullscreenBtn");
 
 btn.onclick = () => {
   if (!document.fullscreenElement) {
-    container.requestFullscreen().catch(err => {
-      alert("Fullscreen failed: " + err.message);
-    });
-  } else {
-    document.exitFullscreen();
+    container.requestFullscreen();
   }
 };
+
+// Hide/show button based on fullscreen state
+document.addEventListener("fullscreenchange", () => {
+  if (document.fullscreenElement) {
+    btn.style.display = "none";
+  } else {
+    btn.style.display = "block";
+  }
+});
 </script>
 
 </body>
